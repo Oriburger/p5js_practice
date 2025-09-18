@@ -1,90 +1,83 @@
-let shapes = []; // 도형들을 저장할 배열
-let numShapes = 30; // 초기 도형의 개수
+let particles = [];
+const numParticles = 100; // 파티클 개수 (너무 많으면 성능 저하 가능)
+
+// 연결선이 생기는 최대 거리
+const maxDist = 120; 
+// 마우스와 연결되는 최대 거리
+const mouseDist = 150;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  angleMode(DEGREES); // 각도 단위를 도로 설정
   
-  // 초기 도형 생성
-  for (let i = 0; i < numShapes; i++) {
-    shapes.push(new Shape());
+  // 파티클 생성
+  for (let i = 0; i < numParticles; i++) {
+    particles.push(new Particle());
   }
 }
 
 function draw() {
-  background(0, 0, 20, 50); // 투명도를 가진 어두운 배경 (잔상 효과)
+  // 배경을 어두운 남색으로 설정
+  background(10, 10, 30);
   
-  for (let i = 0; i < shapes.length; i++) {
-    shapes[i].move();
-    shapes[i].display();
-    shapes[i].checkEdges();
-  }
-  
-  // 마우스 클릭 시 새로운 도형 생성
-  if (mouseIsPressed && frameCount % 5 === 0) { // 너무 많이 생성되지 않도록 조절
-    shapes.push(new Shape(mouseX, mouseY));
-    if (shapes.length > 50) { // 배열 크기 제한
-      shapes.splice(0, 1);
+  // 모든 파티클에 대해 반복
+  for (let i = 0; i < particles.length; i++) {
+    particles[i].update();
+    particles[i].draw();
+    particles[i].checkEdges();
+    
+    // 다른 파티클과의 연결선 그리기
+    for (let j = i + 1; j < particles.length; j++) {
+      let d = dist(particles[i].pos.x, particles[i].pos.y, particles[j].pos.x, particles[j].pos.y);
+      if (d < maxDist) {
+        // 거리에 따라 선의 투명도 조절
+        let alpha = map(d, 0, maxDist, 255, 0);
+        stroke(255, alpha * 0.4); // 선 색상 및 투명도
+        strokeWeight(1);
+        line(particles[i].pos.x, particles[i].pos.y, particles[j].pos.x, particles[j].pos.y);
+      }
+    }
+    
+    // 마우스와의 연결선 그리기
+    let dMouse = dist(particles[i].pos.x, particles[i].pos.y, mouseX, mouseY);
+    if (dMouse < mouseDist) {
+        let alpha = map(dMouse, 0, mouseDist, 255, 0);
+        stroke(169, 194, 255, alpha * 0.8); // 포인트 색상으로 강조
+        strokeWeight(1.5); // 마우스 연결선은 조금 더 굵게
+        line(particles[i].pos.x, particles[i].pos.y, mouseX, mouseY);
     }
   }
 }
 
-// 창 크기 조절 시 캔버스도 조절
+// 창 크기가 변경될 때 캔버스 크기도 조절
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
-// Shape 클래스 정의
-class Shape {
-  constructor(x = random(width), y = random(height)) {
-    this.x = x;
-    this.y = y;
-    this.vx = random(-2, 2); // x축 속도
-    this.vy = random(-2, 2); // y축 속도
-    this.size = random(20, 80); // 도형 크기
-    this.type = floor(random(3)); // 0: 원, 1: 사각형, 2: 삼각형
-    this.rotation = random(360); // 초기 회전 각도
-    this.rotationSpeed = random(-1, 1); // 회전 속도
-    this.color = color(random(255), random(255), random(255), 150); // 투명한 무작위 색상
-    this.lifespan = 255; // 도형의 수명
+// Particle 클래스
+class Particle {
+  constructor() {
+    this.pos = createVector(random(width), random(height));
+    this.vel = createVector(random(-1, 1), random(-1, 1));
+    this.size = random(2, 5);
   }
   
-  move() {
-    this.x += this.vx;
-    this.y += this.vy;
-    this.rotation += this.rotationSpeed;
-    this.lifespan -= 0.5; // 시간이 지남에 따라 수명 감소
-    this.color.setAlpha(this.lifespan); // 수명에 따라 투명도 조절
+  // 위치 업데이트
+  update() {
+    this.pos.add(this.vel);
   }
   
-  display() {
-    push(); // 현재 변환 상태 저장
-    translate(this.x, this.y); // 도형을 그릴 위치로 이동
-    rotate(this.rotation); // 도형 회전
-    
+  // 파티클 그리기
+  draw() {
     noStroke();
-    fill(this.color);
-    
-    switch (this.type) {
-      case 0: // 원
-        ellipse(0, 0, this.size);
-        break;
-      case 1: // 사각형
-        rectMode(CENTER);
-        rect(0, 0, this.size, this.size);
-        break;
-      case 2: // 삼각형
-        triangle(0, -this.size / 2, -this.size / 2, this.size / 2, this.size / 2, this.size / 2);
-        break;
-    }
-    pop(); // 저장된 변환 상태 복원
+    fill(255, 150); // 파티클 색상 및 투명도
+    circle(this.pos.x, this.pos.y, this.size);
   }
   
+  // 화면 경계 체크 (밖으로 나가면 반대편에서 등장)
   checkEdges() {
-    // 화면 밖으로 나가면 반대편에서 나타나도록 처리
-    if (this.x > width + this.size / 2) this.x = -this.size / 2;
-    if (this.x < -this.size / 2) this.x = width + this.size / 2;
-    if (this.y > height + this.size / 2) this.y = -this.size / 2;
-    if (this.y < -this.size / 2) this.y = height + this.size / 2;
+    if (this.pos.x < 0) this.pos.x = width;
+    if (this.pos.x > width) this.pos.x = 0;
+    if (this.pos.y < 0) this.pos.y = height;
+    if (this.pos.y > height) this.pos.y = 0;
   }
 }
