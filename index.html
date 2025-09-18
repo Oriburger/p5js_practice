@@ -3,13 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hong Yeji Portfolio Visual Art</title>
+    <title>Kong-G Portfolio</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+    
     <style>
-        body { margin: 0; overflow: hidden; }
+        /* 기본 스타일 초기화 */
+        body { 
+            margin: 0; 
+            overflow: hidden;
+            font-family: 'Noto Sans KR', sans-serif; /* 폰트 적용 */
+        }
+
+        /* p5.js 캔버스를 배경으로 고정 */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1; /* 캔버스를 다른 요소들 뒤로 보냄 */
+        }
+
+        /* 자기소개 정보를 담을 컨테이너 */
+        .profile-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+            color: white;
+        }
+        
+        /* 정보 카드 스타일 */
+        .profile-card {
+            background-color: rgba(0, 0, 10, 0.6); /* 반투명 배경 */
+            padding: 40px 50px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px); /* 뒷배경 블러 처리 (모던한 느낌) */
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            text-align: left;
+            max-width: 450px;
+        }
+
+        .profile-card h1 {
+            font-size: 3rem; /* 48px */
+            font-weight: 700;
+            margin: 0;
+            margin-bottom: 25px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.8);
+            padding-bottom: 15px;
+        }
+        
+        .profile-card p {
+            font-size: 1.1rem; /* 17.6px */
+            font-weight: 300;
+            line-height: 1.8;
+            margin: 10px 0;
+        }
+
+        .profile-card strong {
+            font-weight: 400;
+            color: #a9c2ff; /* 포인트 색상 */
+            margin-right: 15px;
+        }
+
     </style>
 </head>
 <body>
+
+    <div class="profile-container">
+        <div class="profile-card">
+            <h1>콩지 (Kong-G)</h1>
+            <p><strong>Age</strong> 24</p>
+            <p><strong>University</strong> Soongsil University</p>
+            <p><strong>Major</strong> Business Administration</p>
+            <p><strong>Hobby</strong> Watching 'Demon Slayer'</p>
+        </div>
+    </div>
+    
     <script src="sketch.js"></script>
 </body>
 </html>
