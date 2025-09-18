@@ -26,7 +26,7 @@
             left: 0;
             z-index: -1;
         }
-
+    
         /* --- 전체 레이아웃 컨테이너 --- */
         .main-container {
             display: flex;
@@ -55,8 +55,6 @@
             max-width: 700px;
             margin-bottom: 40px;
         }
-
-        /* 1. 사진이 들어갈 자리 */
         .photo-placeholder {
             width: 150px;
             height: 150px;
@@ -65,9 +63,7 @@
             border: 3px solid var(--point-color);
             margin-right: 40px;
             flex-shrink: 0;
-            /* 이미지를 넣으려면 background-image: url('이미지주소'); 를 추가하세요 */
         }
-
         .profile-info h1 {
             font-size: 2.5rem;
             font-weight: 700;
@@ -87,7 +83,7 @@
             width: 100px;
         }
         
-        /* --- 2. 주요 활동 그리드 --- */
+        /* --- 주요 활동 그리드 --- */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -140,7 +136,7 @@
             visibility: visible;
         }
         .modal-content {
-            background-color: rgba(10, 10, 30, 0.8);
+            background-color: rgba(10, 10, 30, 0.85); /* 배경을 조금 더 진하게 */
             backdrop-filter: blur(15px);
             padding: 40px;
             border-radius: 15px;
@@ -149,12 +145,22 @@
             max-width: 600px;
             transform: scale(0.8);
             transition: transform 0.4s ease;
+            
+            /* ▼▼▼▼▼ 수정된 부분 ▼▼▼▼▼ */
+            color: #f0f0f0; /* 모달 전체에 밝은 텍스트 색상 적용 */
+            line-height: 1.7; /* 줄 간격을 넓혀 가독성 향상 */
+            /* ▲▲▲▲▲ 수정된 부분 ▲▲▲▲▲ */
         }
         .modal-overlay.active .modal-content {
             transform: scale(1);
         }
         .modal-content h2 {
+            /* ▼▼▼▼▼ 수정된 부분 ▼▼▼▼▼ */
             margin-top: 0;
+            margin-bottom: 20px; /* 제목과 내용 사이 간격 추가 */
+            color: #ffffff; /* 제목 색상을 더 밝게 */
+            font-size: 1.8rem;
+            /* ▲▲▲▲▲ 수정된 부분 ▲▲▲▲▲ */
         }
         .close-button {
             position: absolute;
