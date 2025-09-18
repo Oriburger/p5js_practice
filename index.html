@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,84 +8,245 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <style>
-        /* 기본 스타일 초기화 */
+        /* --- 기본 스타일 --- */
+        :root {
+            --point-color: #a9c2ff;
+        }
         body { 
             margin: 0; 
             overflow: hidden;
-            font-family: 'Noto Sans KR', sans-serif; /* 폰트 적용 */
+            font-family: 'Noto Sans KR', sans-serif;
         }
-
-        /* p5.js 캔버스를 배경으로 고정 */
         canvas {
             position: fixed;
             top: 0;
             left: 0;
-            z-index: -1; /* 캔버스를 다른 요소들 뒤로 보냄 */
+            z-index: -1;
         }
 
-        /* 자기소개 정보를 담을 컨테이너 */
-        .profile-container {
+        /* --- 전체 레이아웃 컨테이너 --- */
+        .main-container {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             width: 100vw;
             height: 100vh;
             color: white;
+            padding: 20px;
+            box-sizing: border-box;
         }
         
-        /* 정보 카드 스타일 */
+        /* --- 프로필 카드 --- */
         .profile-card {
-            background-color: rgba(0, 0, 10, 0.6); /* 반투명 배경 */
-            padding: 40px 50px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px); /* 뒷배경 블러 처리 (모던한 느낌) */
+            display: flex;
+            align-items: center;
+            background-color: rgba(0, 0, 10, 0.6);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            text-align: left;
-            max-width: 450px;
+            width: 100%;
+            max-width: 700px;
+            margin-bottom: 40px;
         }
 
-        .profile-card h1 {
-            font-size: 3rem; /* 48px */
-            font-weight: 700;
-            margin: 0;
-            margin-bottom: 25px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.8);
-            padding-bottom: 15px;
+        /* 1. 사진이 들어갈 자리 */
+        .photo-placeholder {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: #2a2a3a;
+            border: 3px solid var(--point-color);
+            margin-right: 40px;
+            flex-shrink: 0;
+            /* 이미지를 넣으려면 background-image: url('이미지주소'); 를 추가하세요 */
         }
-        
-        .profile-card p {
-            font-size: 1.1rem; /* 17.6px */
+
+        .profile-info h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 0 20px;
+        }
+        .profile-info p {
+            font-size: 1rem;
             font-weight: 300;
             line-height: 1.8;
-            margin: 10px 0;
+            margin: 8px 0;
         }
-
-        .profile-card strong {
-            font-weight: 400;
-            color: #a9c2ff; /* 포인트 색상 */
+        .profile-info strong {
+            font-weight: 500;
+            color: var(--point-color);
             margin-right: 15px;
+            display: inline-block;
+            width: 100px;
         }
-
+        
+        /* --- 2. 주요 활동 그리드 --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 700px;
+        }
+        .grid-item {
+            background-color: rgba(0, 0, 10, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        .grid-item:hover {
+            transform: translateY(-10px);
+            background-color: rgba(169, 194, 255, 0.2);
+        }
+        .grid-item h3 {
+            margin-top: 0;
+            font-weight: 500;
+        }
+        .grid-item p {
+            font-size: 0.9rem;
+            font-weight: 300;
+            margin-bottom: 0;
+            opacity: 0.8;
+        }
+        
+        /* --- 서브 페이지 (모달) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+            z-index: 1000;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: rgba(10, 10, 30, 0.8);
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 90%;
+            max-width: 600px;
+            transform: scale(0.8);
+            transition: transform 0.4s ease;
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        .modal-content h2 {
+            margin-top: 0;
+        }
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
+            color: white;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
     </style>
 </head>
 <body>
 
-    <div class="profile-container">
+    <div class="main-container">
         <div class="profile-card">
-            <h1>콩지 (Kong-G)</h1>
-            <p><strong>Age</strong> 24</p>
-            <p><strong>University</strong> Soongsil University</p>
-            <p><strong>Major</strong> Business Administration</p>
-            <p><strong>Hobby</strong> Watching '귀멸의 칼날'</p>
-            <p><strong>Favorite</strong> 'Tomioka Giyuu'</p>
+            <div class="photo-placeholder"></div>
+            <div class="profile-info">
+                <h1>콩지 (Kong-G)</h1>
+                <p><strong>Age</strong> 24</p>
+                <p><strong>University</strong> Soongsil University</p>
+                <p><strong>Major</strong> Business Administration</p>
+                <p><strong>Hobby</strong> Watching '귀멸의 칼날'</p>
+                <p><strong>Favorite</strong> Tomioka Giyuu </p>
+            </div>
+        </div>
+
+        <div class="grid-container">
+            <div class="grid-item" data-title="Project A" data-content="Project A는 비즈니스 모델 혁신을 목표로 진행된 팀 프로젝트입니다. 시장 분석, 경쟁사 조사, 그리고 새로운 수익 모델 제안을 담당했습니다.">
+                <h3>Project A</h3>
+                <p>Business Model Innovation</p>
+            </div>
+            <div class="grid-item" data-title="Marketing Internship" data-content="OO 기업에서 마케팅 인턴으로 3개월간 근무했습니다. 소셜 미디어 콘텐츠 기획 및 제작, 광고 캠페인 성과 분석 등의 업무를 수행했습니다.">
+                <h3>Internship</h3>
+                <p>Digital Marketing</p>
+            </div>
+            <div class="grid-item" data-title="Leadership" data-content="경영학부 학생회 기획부장으로 활동하며, 신입생 환영회 및 학술제 등 다양한 행사를 성공적으로 기획하고 총괄했습니다.">
+                <h3>Student Council</h3>
+                <p>Head of Planning</p>
+            </div>
+            <div class="grid-item" data-title="Certification" data-content="데이터 분석 및 활용 능력 향상을 위해 SQLD 자격증을 취득했습니다. 또한, Google Analytics Certificate를 보유하고 있습니다.">
+                <h3>Skills & Cert.</h3>
+                <p>Data Analysis</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-button">&times;</button>
+            <h2 id="modal-title"></h2>
+            <p id="modal-content"></p>
         </div>
     </div>
     
     <script src="sketch.js"></script>
+
+    <script>
+        // --- 모달 로직을 위한 JavaScript ---
+        const gridItems = document.querySelectorAll('.grid-item');
+        const modalOverlay = document.querySelector('.modal-overlay');
+        const modalTitle = document.getElementById('modal-title');
+        const modalContent = document.getElementById('modal-content');
+        const closeButton = document.querySelector('.close-button');
+
+        gridItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // data-* 속성에서 제목과 내용 가져오기
+                const title = item.getAttribute('data-title');
+                const content = item.getAttribute('data-content');
+                
+                // 모달에 내용 채우기
+                modalTitle.textContent = title;
+                modalContent.textContent = content;
+                
+                // 모달 보이기
+                modalOverlay.classList.add('active');
+            });
+        });
+        
+        // 닫기 버튼 또는 모달 바깥 영역 클릭 시 모달 닫기
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+        }
+        
+        closeButton.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (event) => {
+            if (event.target === modalOverlay) {
+                closeModal();
+            }
+        });
+    </script>
 </body>
 </html>
